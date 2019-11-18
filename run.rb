@@ -18,7 +18,7 @@ toxic_domains = {
 
 def prepare_db
   command = "cp #{CHROME_HISTORY_PATH}/History " \
- 						"#{CHROME_HISTORY_PATH}/History.db"
+            "#{CHROME_HISTORY_PATH}/History.db"
   `#{command}`
 end
 
@@ -27,8 +27,8 @@ def read_history(db_file)
     morning = (Time.now - (3600 * 24)).strftime("%Y-%m-%d") # yesterday
     db = SQLite3::Database.open(db_file)
     querry = "SELECT * FROM urls " \
-						 "WHERE datetime(last_visit_time / 1000000 + (strftime('%s', '1601-01-01')), 'unixepoch') > '#{morning}' " \
-						 "ORDER BY last_visit_time ASC "
+              "WHERE datetime(last_visit_time / 1000000 + (strftime('%s', '1601-01-01')), 'unixepoch') > '#{morning}' " \
+              "ORDER BY last_visit_time ASC "
 
     statement = db.prepare(querry)
     results = statement.execute
@@ -49,13 +49,13 @@ end
 
 def parse_row(row)
   {
-      :id => row[0],
-      :url => row[1],
-      :title => row[2],
-      :visit_count => row[3],
-      :typed_count => row[4],
-      :last_visit_time => prettify_chrome_ts(row[5]),
-      :hidden => row[6]
+    :id => row[0],
+    :url => row[1],
+    :title => row[2],
+    :visit_count => row[3],
+    :typed_count => row[4],
+    :last_visit_time => prettify_chrome_ts(row[5]),
+    :hidden => row[6]
   }
 end
 
