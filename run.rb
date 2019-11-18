@@ -60,9 +60,8 @@ def parse_row(row)
 end
 
 def prettify_chrome_ts(chrome_ts)
-  chrome_timestamp = chrome_ts.to_i
   since_epoch = DateTime.new(1601,1,1).to_time.to_i
-  final_epoch = (chrome_timestamp / 1000000) + since_epoch
+  final_epoch = (chrome_ts.to_i / 1000000) + since_epoch
   DateTime.strptime(final_epoch.to_s, '%s')
 end
 
