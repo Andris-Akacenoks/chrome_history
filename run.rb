@@ -27,8 +27,8 @@ def read_history(db_file)
     morning = (Time.now - (3600 * 24)).strftime("%Y-%m-%d") # yesterday
     db = SQLite3::Database.open(db_file)
     querry = "SELECT * FROM urls " \
-              "WHERE datetime(last_visit_time / 1000000 + (strftime('%s', '1601-01-01')), 'unixepoch') > '#{morning}' " \
-              "ORDER BY last_visit_time ASC "
+             "WHERE datetime(last_visit_time / 1000000 + (strftime('%s', '1601-01-01')), 'unixepoch') > '#{morning}' " \
+             "ORDER BY last_visit_time ASC "
 
     statement = db.prepare(querry)
     results = statement.execute
