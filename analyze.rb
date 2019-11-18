@@ -18,31 +18,31 @@ toxic_domains = {
 
 def prepare_db
 	command = "cp #{CHROME_HISTORY_PATH}/History " \
-			  "#{CHROME_HISTORY_PATH}/History.db"
-  	`#{command}`
+ 						"#{CHROME_HISTORY_PATH}/History.db"
+	`#{command}`
 end	
 
 def read_history(db_file)
 	begin
 		morning = (Time.now - (3600 * 24)).strftime("%Y-%m-%d") # yesterday
-	    db = SQLite3::Database.open(db_file)
-	    querry = "SELECT * FROM urls " \
-	    		 "WHERE datetime(last_visit_time / 1000000 + (strftime('%s', '1601-01-01')), 'unixepoch') > '#{morning}' " \
-	    		 "ORDER BY last_visit_time ASC "
+		db = SQLite3::Database.open(db_file)
+		querry = "SELECT * FROM urls " \
+						 "WHERE datetime(last_visit_time / 1000000 + (strftime('%s', '1601-01-01')), 'unixepoch') > '#{morning}' " \
+						 "ORDER BY last_visit_time ASC "
 
-	    statement = db.prepare(querry)
-	    results = statement.execute 
+		statement = db.prepare(querry)
+		results = statement.execute
 
 		history = []
 		results.each do |row| 	
 			history << parse_row(row)
 		end
-	    return history
+		return history
 	rescue SQLite3::Exception => e 
-	    puts "Exception occurred: #{e}"
+		puts "Exception occurred: #{e}"
 	ensure
-	    statement.close if statement
-	    db.close if db
+		statement.close if statement
+		db.close if db
 	end
 	nil
 end
@@ -55,15 +55,15 @@ def parse_row(row)
 		:visit_count => row[3],
 		:typed_count => row[4],
 		:last_visit_time => prettify_chrome_ts(row[5]),
-		:hidden => row[6]	
+		:hidden => row[6]
 	}
 end
 
 def prettify_chrome_ts(chrome_ts)
-    chrome_timestamp = chrome_ts.to_i
+	chrome_timestamp = chrome_ts.to_i
 	since_epoch = DateTime.new(1601,1,1).to_time.to_i
 	final_epoch = (chrome_timestamp / 1000000) + since_epoch
-	return DateTime.strptime(final_epoch.to_s, '%s')
+	DateTime.strptime(final_epoch.to_s, '%s')
 end
 
 def get_domains(history)
@@ -80,7 +80,7 @@ def get_toxic_usage(total, toxic_domains)
 	total.each do |domain|
 		toxic_domains[domain] += 1 if toxic_domains.include?(domain)
 	end
-	toxic_domains 
+	toxic_domains
 end
 
 # Rename History to History.db to read here
