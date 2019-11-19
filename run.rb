@@ -4,7 +4,7 @@ require 'json'
 
 USER = 'andrisakacenko'
 CHROME_HISTORY_PATH = "/Users/#{USER}/Library/Application\\ Support/Google/Chrome/Profile\\ 3"
-DB_PATH = "/Users/andrisakacenko/Library/Application\ Support/Google/Chrome/Profile\ 3/History.db"
+DB_PATH = "/Users/#{USER}/Library/Application\ Support/Google/Chrome/Profile\ 3/History.db"
 
 toxic_domains = {
     'facebook.com' => 0,
@@ -24,7 +24,7 @@ end
 
 def read_history(db_file)
   begin
-    morning = (Time.now - (3600 * 24)).strftime("%Y-%m-%d") # yesterday
+    morning = (Time.now - (3600 * 24)).strftime("%Y-%m-%d") # yesterday, since midnight
     db = SQLite3::Database.open(db_file)
     querry = "SELECT * FROM urls " \
              "WHERE datetime(last_visit_time / 1000000 + (strftime('%s', '1601-01-01')), 'unixepoch') > '#{morning}' " \
@@ -38,6 +38,7 @@ def read_history(db_file)
       history << parse_row(row)
     end
     return history
+    
   rescue SQLite3::Exception => e
     puts "Exception occurred: #{e}"
   ensure
@@ -69,8 +70,7 @@ def get_domains(history)
   domains = []
   history.each do |entry|
     url = entry[:url].match('^(?:http:\/\/|www\.|https:\/\/)([^\/]+)').to_s
-    domain = url.gsub('http://', '').gsub('https://', '').gsub('www.', '')
-    domains << domain
+    domains << url.gsub('http://', '').gsub('https://', '').gsub('www.', '')
   end
   domains
 end
@@ -93,4 +93,6 @@ all_domains = get_domains(history_hash)
 
 # Find how much of each toxic site were visited
 toxic_summary = get_toxic_usage(all_domains, toxic_domains)
+
+# Print summary
 puts JSON.pretty_generate(toxic_summary)
