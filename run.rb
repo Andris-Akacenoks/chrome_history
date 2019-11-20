@@ -29,18 +29,15 @@ def read_history(db_file)
     querry = "SELECT * FROM urls " \
              "WHERE datetime(last_visit_time / 1000000 + (strftime('%s', '1601-01-01')), 'unixepoch') > '#{morning}' " \
              "ORDER BY last_visit_time ASC "
-
     statement = db.prepare(querry)
     results = statement.execute
-
     history = []
     results.each do |row|
       history << parse_row(row)
     end
     return history
-    
   rescue SQLite3::Exception => e
-    puts "Exception occurred: #{e}"
+    puts "SQLite exception occurred: #{e}"
   ensure
     statement.close if statement
     db.close if db
